@@ -6,7 +6,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
 
-public class TrendingDailySongDataReducer extends Reducer<IntWritable, Text, Text, IntWritable> {
+public class TrendingDailySongDataReducer extends Reducer<IntWritable, Text, Text, Text> {
 
     private int count = 0;
 
@@ -35,7 +35,7 @@ public class TrendingDailySongDataReducer extends Reducer<IntWritable, Text, Tex
         for (Text playedDateSongIdStr : playedDateSongIdStrItr) {
             songPlayedCount = -1 * songPlayedCountIntWritable.get();
             if (count < 100) {
-                context.write(playedDateSongIdStr, new IntWritable(songPlayedCount));
+                context.write(new Text(playedDateSongIdStr), new Text( songPlayedCount + "~" + count));
                 count ++;
             }
         }

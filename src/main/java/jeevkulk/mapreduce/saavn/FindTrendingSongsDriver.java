@@ -2,15 +2,11 @@ package jeevkulk.mapreduce.saavn;
 
 import jeevkulk.mapreduce.saavn.combiner.DailySongDataCombiner;
 import jeevkulk.mapreduce.saavn.combiner.HourlySongDataCombiner;
-import jeevkulk.mapreduce.saavn.combiner.TrendingSongDataCombiner;
 import jeevkulk.mapreduce.saavn.mapper.DailySongDataMapper;
+import jeevkulk.mapreduce.saavn.mapper.DateWiseTrendingSongDataMapper;
 import jeevkulk.mapreduce.saavn.mapper.HourlySongDataMapper;
 import jeevkulk.mapreduce.saavn.mapper.TrendingSongDataMapper;
-import jeevkulk.mapreduce.saavn.partitioner.SongDataPartitioner;
-import jeevkulk.mapreduce.saavn.reducer.DailySongDataReducer;
-import jeevkulk.mapreduce.saavn.reducer.HourlySongDataReducer;
-import jeevkulk.mapreduce.saavn.reducer.TrendingDailySongDataReducer;
-import jeevkulk.mapreduce.saavn.reducer.TrendingHourlySongDataReducer;
+import jeevkulk.mapreduce.saavn.reducer.*;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -77,7 +73,6 @@ public class FindTrendingSongsDriver extends Configured implements Tool {
         job2.setOutputValueClass(IntWritable.class);
 
         job2.setMapperClass(TrendingSongDataMapper.class);
-        job2.setCombinerClass(TrendingSongDataCombiner.class);
         job2.setReducerClass(TrendingHourlySongDataReducer.class);
 
         FileInputFormat.addInputPath(job2, new Path(outputDir + "_temp1"));
@@ -116,7 +111,7 @@ public class FindTrendingSongsDriver extends Configured implements Tool {
         }
 
         /**
-         * Fourth mapreduce job to find top 10 daily count of songs played
+         * Fourth mapreduce job to find top 100 daily count of songs played
          */
         Job job4 = Job.getInstance(getConf());
         job4.setJobName("Saavn Daily Trending Songs Finder");
@@ -126,18 +121,42 @@ public class FindTrendingSongsDriver extends Configured implements Tool {
         job4.setMapOutputKeyClass(IntWritable.class);
         job4.setMapOutputValueClass(Text.class);
         job4.setOutputKeyClass(Text.class);
-        job4.setOutputValueClass(IntWritable.class);
+        job4.setOutputValueClass(Text.class);
 
         job4.setMapperClass(TrendingSongDataMapper.class);
-        job4.setCombinerClass(TrendingSongDataCombiner.class);
         //job4.setPartitionerClass(SongDataPartitioner.class);
         job4.setReducerClass(TrendingDailySongDataReducer.class);
 
         FileInputFormat.addInputPath(job4, new Path(outputDir + "_temp3"));
-        FileOutputFormat.setOutputPath(job4, new Path(outputDir));
+        FileOutputFormat.setOutputPath(job4, new Path(outputDir + "_temp4"));
 
         try {
             success = job4.waitForCompletion(true) ? 0 : 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        /**
+         * Fifth mapreduce job to get date-wise final output
+         */
+        Job job5 = Job.getInstance(getConf());
+        job5.setJobName("Saavn Daily Trending Songs Finder (Final)");
+        job5.setJarByClass(FindTrendingSongsDriver.class);
+        job5.setNumReduceTasks(31);
+
+        job5.setMapOutputKeyClass(Text.class);
+        job5.setMapOutputValueClass(Text.class);
+        job5.setOutputKeyClass(Text.class);
+        job5.setOutputValueClass(Text.class);
+
+        job5.setMapperClass(DateWiseTrendingSongDataMapper.class);
+        job5.setReducerClass(DateWiseTrendingDailySongDataReducer.class);
+
+        FileInputFormat.addInputPath(job5, new Path(outputDir + "_temp4"));
+        FileOutputFormat.setOutputPath(job5, new Path(outputDir));
+
+        try {
+            success = job5.waitForCompletion(true) ? 0 : 1;
         } catch (Exception e) {
             e.printStackTrace();
         }
