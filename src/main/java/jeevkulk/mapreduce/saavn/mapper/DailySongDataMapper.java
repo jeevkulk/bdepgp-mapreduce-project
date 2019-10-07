@@ -1,6 +1,5 @@
 package jeevkulk.mapreduce.saavn.mapper;
 
-import jeevkulk.mapreduce.saavn.domain.Song;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -14,6 +13,16 @@ public class DailySongDataMapper extends Mapper<LongWritable, Text, Text, IntWri
 
     private Logger logger = LoggerFactory.getLogger(DailySongDataMapper.class);
 
+    /**
+     * Maps data as per below:
+     * Key      : Date~Song Id
+     * Value    : count is carried forward
+     * @param key
+     * @param value
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
     @Override
     public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         String[] fields = value.toString().split("\t");
