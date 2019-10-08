@@ -1,6 +1,5 @@
 package jeevkulk.mapreduce.saavn.mapper;
 
-import jeevkulk.mapreduce.saavn.domain.Song;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -10,14 +9,16 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class HourlySongDataMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
+public class HourlySongDataMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     private Logger logger = LoggerFactory.getLogger(HourlySongDataMapper.class);
 
     /**
      * Maps data as per below:
-     * Key      : Date~Hour~Song Id
-     * Value    : count defaulted to 1
+     * Job1 Input Key       : Long
+     * Job1 Input Value     : songId,userId,songPlayedTimestamp,songPlayedHour,songPlayedDate
+     * Job1 Output Key      : songPlayedDate~songPlayedHour
+     * Job1 Output Value    : songId~songCount defaulted to 1
      * @param key
      * @param value
      * @param context
@@ -34,6 +35,6 @@ public class HourlySongDataMapper extends Mapper<LongWritable, Text, Text, IntWr
                 fields = valueStr.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
             }
         }
-        context.write(new Text(fields[4] + "~" + fields[3] + "~" + fields[0]), new IntWritable(1));
+        context.write(new Text(fields[4] + "~" + fields[3]), new Text(fields[0] + "~" + 1));
     }
 }

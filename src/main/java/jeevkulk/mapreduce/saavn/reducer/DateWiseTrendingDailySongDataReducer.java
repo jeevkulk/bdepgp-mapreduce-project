@@ -9,6 +9,10 @@ public class DateWiseTrendingDailySongDataReducer extends Reducer<Text, Text, Te
 
     /**
      * Date-wise trending songs played
+     * Job4 Input Key     : Date
+     * Job4 Input Value   : Song Id~Song Played Count~Rank
+     * Job4 Output Key    : Song Id
+     * Job4 Output Value  : Date~Rank
      * @param songPlayedDateText
      * @param playedSongIdCountStrItr
      * @param context

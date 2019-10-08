@@ -14,9 +14,14 @@ public class TrendingSongDataMapper extends Mapper<LongWritable, Text, IntWritab
     private Logger logger = LoggerFactory.getLogger(TrendingSongDataMapper.class);
 
     /**
-     * Maps data as per below:
-     * Key      : Count in negative to get trending songs first
-     * Value    : Key becomes value
+     * Swaps the key and value
+     * Job2 Input Key      : songPlayedDate~songPlayedHour~songId
+     * Job2 Input Value    : songCount
+     * Job2 Output Key     : songCount in negative to get trending songs
+     * Job2 Output Value   : songPlayedDate~songPlayedHour~songId
+     *
+     * Job4 Output Key     : Count in negative to get trending songs
+     * Job4 Output Value   : Date~Song Id
      * @param key
      * @param value
      * @param context
