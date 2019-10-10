@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class TrendingDailySongDataReducer extends Reducer<IntWritable, Text, Text, Text> {
 
-    private int count = 0;
+    private int rank = 0;
 
     /**
      * Initialized count which is used to select top 10 songs
@@ -18,11 +18,13 @@ public class TrendingDailySongDataReducer extends Reducer<IntWritable, Text, Tex
      */
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
-        count = 0;
+        rank = 0;
     }
 
     /**
-     * Selected top ten songs played on an hourly basis
+     * Selected top hundred songs played on daily basis
+     * Job4 Output Key      : Date~Song Id
+     * Job4 Output Value    : Song Played Count~Rank
      * @param songPlayedCountIntWritable
      * @param playedDateSongIdStrItr
      * @param context
@@ -34,9 +36,9 @@ public class TrendingDailySongDataReducer extends Reducer<IntWritable, Text, Tex
         int songPlayedCount = 0;
         for (Text playedDateSongIdStr : playedDateSongIdStrItr) {
             songPlayedCount = -1 * songPlayedCountIntWritable.get();
-            if (count < 100) {
-                context.write(new Text(playedDateSongIdStr), new Text( songPlayedCount + "~" + count));
-                count ++;
+            if (rank < 100) {
+                context.write(new Text(playedDateSongIdStr), new Text( songPlayedCount + "~" + rank));
+                rank++;
             }
         }
     }
