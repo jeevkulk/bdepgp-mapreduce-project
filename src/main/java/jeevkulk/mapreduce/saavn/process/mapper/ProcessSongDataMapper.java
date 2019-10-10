@@ -1,5 +1,6 @@
 package jeevkulk.mapreduce.saavn.process.mapper;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -28,13 +29,18 @@ public class ProcessSongDataMapper extends Mapper<LongWritable, Text, Text, IntW
     @Override
     public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         int songPlayedCount = 0;
+        Configuration conf = context.getConfiguration();
+        String currentDate = conf.get("currentDate");
         String valueStr = value.toString();
         String[] fields = valueStr.split("\t");
         String[] songPlayedDateId = fields[0].split("~");
 
-        String currentDate = "2017-12-25";
+        int songPlayedDayOfMonth = Integer.parseInt(songPlayedDateId[0].split("-")[2]);
+        int currentDayOfMonth = Integer.parseInt(currentDate);
+        int weightage = 1 / (currentDayOfMonth - songPlayedDayOfMonth);
+
         if (currentDate.compareTo(songPlayedDateId[0]) > 0) {
-            songPlayedCount = -1 * Integer.parseInt(fields[0]);
+            songPlayedCount = -1 * Integer.parseInt(fields[0]) * weightage;
         } else if (currentDate.compareTo(songPlayedDateId[0]) == 0) {
             songPlayedCount = Integer.parseInt(fields[0]);
         }

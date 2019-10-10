@@ -49,6 +49,7 @@ public class FindTrendingSongsDriver extends Configured implements Tool {
         String outputDir = args[1];
         String currentDate = args[2]; //Current date in YYYY-MM-DD format
         getConf().set("mapreduce.app-submission.cross-platform", "true");
+        getConf().set("currentDate", currentDate);
 
         /**
          * Mapreduce job to find daily count of songs played - same is added to historicData on a daily basis

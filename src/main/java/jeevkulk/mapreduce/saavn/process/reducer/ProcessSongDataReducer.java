@@ -1,5 +1,6 @@
 package jeevkulk.mapreduce.saavn.process.reducer;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -25,7 +26,10 @@ public class ProcessSongDataReducer extends Reducer<Text, IntWritable, Text, Int
         int currentDaySongCount = 0;
         int historicSongCount = 0;
         int songPlayedCount = 0;
-        String currentDate = "2017-12-25";
+
+        Configuration conf = context.getConfiguration();
+        String currentDate = conf.get("currentDate");
+
         for (IntWritable songCountIntWritable : songCountIntWritableItr) {
             int songCount = songCountIntWritable.get();
             if (songCount < 0) {
