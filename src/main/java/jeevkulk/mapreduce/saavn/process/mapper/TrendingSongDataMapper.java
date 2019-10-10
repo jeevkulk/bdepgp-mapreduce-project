@@ -1,4 +1,4 @@
-package jeevkulk.mapreduce.saavn.mapper;
+package jeevkulk.mapreduce.saavn.process.mapper;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
@@ -14,14 +14,11 @@ public class TrendingSongDataMapper extends Mapper<LongWritable, Text, IntWritab
     private Logger logger = LoggerFactory.getLogger(TrendingSongDataMapper.class);
 
     /**
-     * Swaps the key and value
-     * Job2 Input Key      : songPlayedDate~songPlayedHour~songId
-     * Job2 Input Value    : songCount
-     * Job2 Output Key     : songCount in negative to get trending songs
-     * Job2 Output Value   : songPlayedDate~songPlayedHour~songId
-     *
-     * Job4 Output Key     : Count in negative to get trending songs
-     * Job4 Output Value   : Date~Song Id
+     * This is to sort and filter top 100 trending songs
+     * Job3 Input Key     : songId
+     * Job3 Input Value   : songTrendingNumber
+     * Job3 Output Key    : songId
+     * Job3 Output Value  : songTrendingNumber
      * @param key
      * @param value
      * @param context

@@ -1,12 +1,11 @@
-package jeevkulk.mapreduce.saavn.partitioner;
+package jeevkulk.mapreduce.saavn.preprocess.partitioner;
 
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Partitioner;
 
-public class SongDataPartitioner extends Partitioner<Text, IntWritable> implements Configurable {
+public class PreprocessSongDataPartitioner extends Partitioner<Text, Text> implements Configurable {
 
     private Configuration configuration;
 
@@ -18,8 +17,15 @@ public class SongDataPartitioner extends Partitioner<Text, IntWritable> implemen
         return configuration;
     }
 
+    /**
+     * This is to partition data date-wise
+     * @param songPlayedDateStr
+     * @param songPlayedCountDays
+     * @param i
+     * @return
+     */
     @Override
-    public int getPartition(Text songPlayedDateStr, IntWritable songCount, int i) {
+    public int getPartition(Text songPlayedDateStr, Text songPlayedCountDays, int i) {
         String[] fields = songPlayedDateStr.toString().split("~");
         String dateStr = fields[0];
         String dayOfMonthStr = dateStr.split("-")[2];
